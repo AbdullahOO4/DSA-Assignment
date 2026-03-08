@@ -1,0 +1,102 @@
+//Stak.h
+#pragma once
+#define MaxItems 100
+typedef int itemType;
+class Stack {
+private:
+	itemType item[MaxItems];
+	int top;
+public:
+	Stack();
+	void Push(itemType);
+	void Pop(itemType&);
+	bool IsEmpty() const;
+	bool IsFull() const;
+};
+
+//Stack.cpp
+#include"Stack.h"
+Stack::Stack() {
+	top = -1;
+}
+void Stack::Push(itemType element) {
+	if (IsFull()) {
+		throw"Stack is full";
+		return;
+	}
+	top++;
+	item[top] = element;
+}
+void Stack::Pop(itemType& element) {
+	if (IsEmpty()) {
+		throw "Stack is empty";
+		
+	}
+	element = item[top];
+	top--;
+}
+bool Stack::IsEmpty() const{
+	
+	return (top == -1);
+	
+}
+bool Stack::IsFull() const {
+	
+	return (top == MaxItems - 1);
+}
+
+//main.cpp
+#include"Stack.h"
+#include<iostream>
+using namespace std;
+int main()
+{
+	Stack s;
+	int choice;
+	int element;
+	
+	do {
+		cout << "\nEnter a choice\n";
+		cout << "1: Push\n";
+		cout << "2: Pop\n";
+		cout << "3: Exit\n";
+		cin >> choice;
+		switch (choice)
+		{
+		case 1:
+		{
+			cout << "Enter number to push into Stack: ";
+			cin >> element;
+			try
+			{
+				s.Push(element);
+			}
+			catch (char const* msg)
+			{
+				cout << msg << endl;
+			}
+			break;
+		}
+		case 2:
+		{
+			try
+			{
+				s.Pop(element);
+				cout << element << " is Poped" << endl;
+			}
+			catch (char const* msg)
+			{
+				cout << msg << endl;
+			}
+			break;
+		}case 3: 
+		{
+			cout << "Exiting program...\n";
+			break;
+		}
+		default: {
+			cout << "invalid chouce" << endl;
+		}
+		}
+	} while (choice != 3);
+}
