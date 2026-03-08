@@ -1,0 +1,201 @@
+//Stak.h
+#pragma once
+#define MaxItems 100
+typedef int itemType;
+class Stack {
+private:
+	itemType item[MaxItems];
+	int top;
+public:
+	Stack();
+	void Push(itemType);
+	void Pop(itemType&);
+	bool IsEmpty() const;
+	bool IsFull() const;
+};
+
+//Stack.cpp
+#include"Stack.h"
+Stack::Stack() {
+	top = -1;
+}
+void Stack::Push(itemType element) {
+	if (IsFull()) {
+		throw"Stack is full";
+		return;
+	}
+	top++;
+	item[top] = element;
+}
+void Stack::Pop(itemType& element) {
+	if (IsEmpty()) {
+		throw "Stack is empty";
+		
+	}
+	element = item[top];
+	top--;
+}
+bool Stack::IsEmpty() const{
+	
+	return (top == -1);
+	
+}
+bool Stack::IsFull() const {
+	
+	return (top == MaxItems - 1);
+}
+
+#include "Stack.h"
+#include <iostream>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+int precedence(char op)
+{
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+}
+
+bool isOperator(char ch)
+{
+    return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+}
+
+void infixToPostfix(string infix, string& postfix)
+{
+    Stack s;
+
+    for (char ch : infix)
+    {
+        if (isalpha(ch))
+        {
+            postfix += ch;
+            postfix += ' ';
+        }
+
+        else if (ch == '(')
+        {
+            s.Push(ch);
+        }
+
+        else if (ch == ')')
+        {
+            int op;
+
+            while (!s.IsEmpty())
+            {
+                s.Pop(op);
+
+                if ((char)op == '(')
+                    break;
+
+                postfix += (char)op;
+                postfix += ' ';
+            }
+        }
+
+        else if (isOperator(ch))
+        {
+            int op;
+
+            while (!s.IsEmpty())
+            {
+                s.Pop(op);
+
+                if ((char)op == '(' || precedence((char)op) < precedence(ch))
+                {
+                    s.Push(op);
+                    break;
+                }
+
+                postfix += (char)op;
+                postfix += ' ';
+            }
+
+            s.Push(ch);
+        }
+    }
+
+    int op;
+
+    while (!s.IsEmpty())
+    {
+        s.Pop(op);
+        postfix += (char)op;
+        postfix += ' ';
+    }
+}
+
+int evaluatePostfix(string postfix)
+{
+    Stack s;
+
+    for (int i = 0; i < postfix.length(); i++)
+    {
+        char ch = postfix[i];
+
+        if (isdigit(ch))
+        {
+            s.Push(ch - '0');
+        }
+
+        else if (isOperator(ch))
+        {
+            int b, a;
+
+            s.Pop(b);
+            s.Pop(a);
+
+            switch (ch)
+            {
+            case '+':
+                s.Push(a + b);
+                break;
+
+            case '-':
+                s.Push(a - b);
+                break;
+
+            case '*':
+                s.Push(a * b);
+                break;
+
+            case '/':
+                s.Push(a / b);
+                break;
+            }
+        }
+    }
+
+    int result;
+    s.Pop(result);
+    return result;
+}
+
+int main()
+{
+    string postfix;
+
+    cout << "--- Infix to Postfix ---\n";
+
+    string infix = "(A+B)*(C-D)+E";
+
+    infixToPostfix(infix, postfix);
+
+    cout << "Infix: " << infix << endl;
+    cout << "Postfix: " << postfix << endl;
+
+    cout << "\n--- Evaluate Postfix ---\n";
+
+    string simplePostfix = "5 2 3 * + 9 -";
+
+    int result = evaluatePostfix(simplePostfix);
+
+    cout << "Postfix Expression: " << simplePostfix << endl;
+    cout << "Result: " << result << endl;
+
+    return 0;
+}
